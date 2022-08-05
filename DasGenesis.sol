@@ -1300,7 +1300,7 @@ contract DasGenesis is Ownable, ERC721, NonblockingReceiver {
     string private baseURI;
     uint256 public bronze = 800000 * 10**9; 
     uint256 public sliver = 2000000 * 10**9;
-    uint256 public low = 788;
+    uint256 public low = 212;
 
     IERC20 public immutable  dasBabyCoin;
 
@@ -1324,10 +1324,10 @@ contract DasGenesis is Ownable, ERC721, NonblockingReceiver {
     }
 
     function checkDasBabyCoin(address _account,uint256 tokenId) public view returns (bool){
-         if (dasBabyCoin.balanceOf(_account) >= bronze && tokenId <= low){
+         if (dasBabyCoin.balanceOf(_account) >= sliver && tokenId <= low){
             return true;
          }
-         if (dasBabyCoin.balanceOf(_account) >= sliver && tokenId > low && tokenId <= 1000) {
+         if (dasBabyCoin.balanceOf(_account) >= bronze && tokenId > low && tokenId <= 1000) {
             return true;
          }
          return false;
