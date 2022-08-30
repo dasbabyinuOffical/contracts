@@ -1,6 +1,6 @@
 /**
  *Submitted for verification at BscScan.com on 2021-07-02
- */
+*/
 
 // File: @openzeppelin/contracts/utils/Context.sol
 
@@ -48,10 +48,7 @@ pragma solidity ^0.8.0;
 abstract contract Ownable is Context {
     address private _owner;
 
-    event OwnershipTransferred(
-        address indexed previousOwner,
-        address indexed newOwner
-    );
+    event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
 
     /**
      * @dev Initializes the contract setting the deployer as the initial owner.
@@ -94,10 +91,7 @@ abstract contract Ownable is Context {
      * Can only be called by the current owner.
      */
     function transferOwnership(address newOwner) public virtual onlyOwner {
-        require(
-            newOwner != address(0),
-            "Ownable: new owner is the zero address"
-        );
+        require(newOwner != address(0), "Ownable: new owner is the zero address");
         emit OwnershipTransferred(_owner, newOwner);
         _owner = newOwner;
     }
@@ -128,9 +122,7 @@ interface IERC20 {
      *
      * Emits a {Transfer} event.
      */
-    function transfer(address recipient, uint256 amount)
-        external
-        returns (bool);
+    function transfer(address recipient, uint256 amount) external returns (bool);
 
     /**
      * @dev Returns the remaining number of tokens that `spender` will be
@@ -139,10 +131,7 @@ interface IERC20 {
      *
      * This value changes when {approve} or {transferFrom} are called.
      */
-    function allowance(address owner, address spender)
-        external
-        view
-        returns (uint256);
+    function allowance(address owner, address spender) external view returns (uint256);
 
     /**
      * @dev Sets `amount` as the allowance of `spender` over the caller's tokens.
@@ -187,11 +176,7 @@ interface IERC20 {
      * @dev Emitted when the allowance of a `spender` for an `owner` is set by
      * a call to {approve}. `value` is the new allowance.
      */
-    event Approval(
-        address indexed owner,
-        address indexed spender,
-        uint256 value
-    );
+    event Approval(address indexed owner, address indexed spender, uint256 value);
 }
 
 // File: @openzeppelin/contracts/utils/Address.sol
@@ -249,17 +234,11 @@ library Address {
      * https://solidity.readthedocs.io/en/v0.5.11/security-considerations.html#use-the-checks-effects-interactions-pattern[checks-effects-interactions pattern].
      */
     function sendValue(address payable recipient, uint256 amount) internal {
-        require(
-            address(this).balance >= amount,
-            "Address: insufficient balance"
-        );
+        require(address(this).balance >= amount, "Address: insufficient balance");
 
         // solhint-disable-next-line avoid-low-level-calls, avoid-call-value
         (bool success, ) = recipient.call{value: amount}("");
-        require(
-            success,
-            "Address: unable to send value, recipient may have reverted"
-        );
+        require(success, "Address: unable to send value, recipient may have reverted");
     }
 
     /**
@@ -280,10 +259,7 @@ library Address {
      *
      * _Available since v3.1._
      */
-    function functionCall(address target, bytes memory data)
-        internal
-        returns (bytes memory)
-    {
+    function functionCall(address target, bytes memory data) internal returns (bytes memory) {
         return functionCall(target, data, "Address: low-level call failed");
     }
 
@@ -317,13 +293,7 @@ library Address {
         bytes memory data,
         uint256 value
     ) internal returns (bytes memory) {
-        return
-            functionCallWithValue(
-                target,
-                data,
-                value,
-                "Address: low-level call with value failed"
-            );
+        return functionCallWithValue(target, data, value, "Address: low-level call with value failed");
     }
 
     /**
@@ -338,16 +308,11 @@ library Address {
         uint256 value,
         string memory errorMessage
     ) internal returns (bytes memory) {
-        require(
-            address(this).balance >= value,
-            "Address: insufficient balance for call"
-        );
+        require(address(this).balance >= value, "Address: insufficient balance for call");
         require(isContract(target), "Address: call to non-contract");
 
         // solhint-disable-next-line avoid-low-level-calls
-        (bool success, bytes memory returndata) = target.call{value: value}(
-            data
-        );
+        (bool success, bytes memory returndata) = target.call{value: value}(data);
         return _verifyCallResult(success, returndata, errorMessage);
     }
 
@@ -357,17 +322,8 @@ library Address {
      *
      * _Available since v3.3._
      */
-    function functionStaticCall(address target, bytes memory data)
-        internal
-        view
-        returns (bytes memory)
-    {
-        return
-            functionStaticCall(
-                target,
-                data,
-                "Address: low-level static call failed"
-            );
+    function functionStaticCall(address target, bytes memory data) internal view returns (bytes memory) {
+        return functionStaticCall(target, data, "Address: low-level static call failed");
     }
 
     /**
@@ -394,16 +350,8 @@ library Address {
      *
      * _Available since v3.4._
      */
-    function functionDelegateCall(address target, bytes memory data)
-        internal
-        returns (bytes memory)
-    {
-        return
-            functionDelegateCall(
-                target,
-                data,
-                "Address: low-level delegate call failed"
-            );
+    function functionDelegateCall(address target, bytes memory data) internal returns (bytes memory) {
+        return functionDelegateCall(target, data, "Address: low-level delegate call failed");
     }
 
     /**
@@ -469,10 +417,7 @@ library SafeERC20 {
         address to,
         uint256 value
     ) internal {
-        _callOptionalReturn(
-            token,
-            abi.encodeWithSelector(token.transfer.selector, to, value)
-        );
+        _callOptionalReturn(token, abi.encodeWithSelector(token.transfer.selector, to, value));
     }
 
     function safeTransferFrom(
@@ -481,10 +426,7 @@ library SafeERC20 {
         address to,
         uint256 value
     ) internal {
-        _callOptionalReturn(
-            token,
-            abi.encodeWithSelector(token.transferFrom.selector, from, to, value)
-        );
+        _callOptionalReturn(token, abi.encodeWithSelector(token.transferFrom.selector, from, to, value));
     }
 
     /**
@@ -507,10 +449,7 @@ library SafeERC20 {
             (value == 0) || (token.allowance(address(this), spender) == 0),
             "SafeERC20: approve from non-zero to non-zero allowance"
         );
-        _callOptionalReturn(
-            token,
-            abi.encodeWithSelector(token.approve.selector, spender, value)
-        );
+        _callOptionalReturn(token, abi.encodeWithSelector(token.approve.selector, spender, value));
     }
 
     function safeIncreaseAllowance(
@@ -519,14 +458,7 @@ library SafeERC20 {
         uint256 value
     ) internal {
         uint256 newAllowance = token.allowance(address(this), spender) + value;
-        _callOptionalReturn(
-            token,
-            abi.encodeWithSelector(
-                token.approve.selector,
-                spender,
-                newAllowance
-            )
-        );
+        _callOptionalReturn(token, abi.encodeWithSelector(token.approve.selector, spender, newAllowance));
     }
 
     function safeDecreaseAllowance(
@@ -536,19 +468,9 @@ library SafeERC20 {
     ) internal {
         unchecked {
             uint256 oldAllowance = token.allowance(address(this), spender);
-            require(
-                oldAllowance >= value,
-                "SafeERC20: decreased allowance below zero"
-            );
+            require(oldAllowance >= value, "SafeERC20: decreased allowance below zero");
             uint256 newAllowance = oldAllowance - value;
-            _callOptionalReturn(
-                token,
-                abi.encodeWithSelector(
-                    token.approve.selector,
-                    spender,
-                    newAllowance
-                )
-            );
+            _callOptionalReturn(token, abi.encodeWithSelector(token.approve.selector, spender, newAllowance));
         }
     }
 
@@ -563,17 +485,11 @@ library SafeERC20 {
         // we're implementing it ourselves. We use {Address.functionCall} to perform this call, which verifies that
         // the target address contains contract code and also asserts for success in the low-level call.
 
-        bytes memory returndata = address(token).functionCall(
-            data,
-            "SafeERC20: low-level call failed"
-        );
+        bytes memory returndata = address(token).functionCall(data, "SafeERC20: low-level call failed");
         if (returndata.length > 0) {
             // Return data is optional
             // solhint-disable-next-line max-line-length
-            require(
-                abi.decode(returndata, (bool)),
-                "SafeERC20: ERC20 operation did not succeed"
-            );
+            require(abi.decode(returndata, (bool)), "SafeERC20: ERC20 operation did not succeed");
         }
     }
 }
@@ -583,25 +499,17 @@ library SafeERC20 {
 pragma solidity ^0.8.0;
 
 interface LinkTokenInterface {
-    function allowance(address owner, address spender)
-        external
-        view
-        returns (uint256 remaining);
+    function allowance(address owner, address spender) external view returns (uint256 remaining);
 
-    function approve(address spender, uint256 value)
-        external
-        returns (bool success);
+    function approve(address spender, uint256 value) external returns (bool success);
 
     function balanceOf(address owner) external view returns (uint256 balance);
 
     function decimals() external view returns (uint8 decimalPlaces);
 
-    function decreaseApproval(address spender, uint256 addedValue)
-        external
-        returns (bool success);
+    function decreaseApproval(address spender, uint256 addedValue) external returns (bool success);
 
-    function increaseApproval(address spender, uint256 subtractedValue)
-        external;
+    function increaseApproval(address spender, uint256 subtractedValue) external;
 
     function name() external view returns (string memory tokenName);
 
@@ -609,9 +517,7 @@ interface LinkTokenInterface {
 
     function totalSupply() external view returns (uint256 totalTokensIssued);
 
-    function transfer(address to, uint256 value)
-        external
-        returns (bool success);
+    function transfer(address to, uint256 value) external returns (bool success);
 
     function transferAndCall(
         address to,
@@ -651,10 +557,7 @@ contract VRFRequestIDBase {
         address _requester,
         uint256 _nonce
     ) internal pure returns (uint256) {
-        return
-            uint256(
-                keccak256(abi.encode(_keyHash, _userSeed, _requester, _nonce))
-            );
+        return uint256(keccak256(abi.encode(_keyHash, _userSeed, _requester, _nonce)));
     }
 
     /**
@@ -666,11 +569,7 @@ contract VRFRequestIDBase {
      * @dev Note that _vRFInputSeed is not the seed passed by the consuming
      * @dev contract, but the one generated by makeVRFInputSeed
      */
-    function makeRequestId(bytes32 _keyHash, uint256 _vRFInputSeed)
-        internal
-        pure
-        returns (bytes32)
-    {
+    function makeRequestId(bytes32 _keyHash, uint256 _vRFInputSeed) internal pure returns (bytes32) {
         return keccak256(abi.encodePacked(_keyHash, _vRFInputSeed));
     }
 }
@@ -787,9 +686,7 @@ abstract contract VRFConsumerBase is VRFRequestIDBase {
      * @param requestId The Id initially returned by requestRandomness
      * @param randomness the VRF output
      */
-    function fulfillRandomness(bytes32 requestId, uint256 randomness)
-        internal
-        virtual;
+    function fulfillRandomness(bytes32 requestId, uint256 randomness) internal virtual;
 
     /**
      * @notice requestRandomness initiates a request for VRF output given _seed
@@ -826,12 +723,7 @@ abstract contract VRFConsumerBase is VRFRequestIDBase {
         // This is the seed passed to VRFCoordinator. The oracle will mix this with
         // the hash of the block containing this request to obtain the seed/input
         // which is finally passed to the VRF cryptographic machinery.
-        uint256 vRFSeed = makeVRFInputSeed(
-            _keyHash,
-            _seed,
-            address(this),
-            nonces[_keyHash]
-        );
+        uint256 vRFSeed = makeVRFInputSeed(_keyHash, _seed, address(this), nonces[_keyHash]);
         // nonces[_keyHash] must stay in sync with
         // VRFCoordinator.nonces[_keyHash][this], which was incremented by the above
         // successful LINK.transferAndCall (in VRFCoordinator.randomnessRequest).
@@ -865,13 +757,8 @@ abstract contract VRFConsumerBase is VRFRequestIDBase {
     // rawFulfillRandomness is called by VRFCoordinator when it receives a valid VRF
     // proof. rawFulfillRandomness then calls fulfillRandomness, after validating
     // the origin of the call
-    function rawFulfillRandomness(bytes32 requestId, uint256 randomness)
-        external
-    {
-        require(
-            msg.sender == vrfCoordinator,
-            "Only VRFCoordinator can fulfill"
-        );
+    function rawFulfillRandomness(bytes32 requestId, uint256 randomness) external {
+        require(msg.sender == vrfCoordinator, "Only VRFCoordinator can fulfill");
         fulfillRandomness(requestId, randomness);
     }
 }
@@ -908,8 +795,7 @@ interface IPancakeSwapLottery {
      * @param _ticketNumbers: array of ticket numbers between 1,000,000 and 1,999,999
      * @dev Callable by users
      */
-    function buyTickets(uint256 _lotteryId, uint32[] calldata _ticketNumbers)
-        external;
+    function buyTickets(uint256 _lotteryId, uint32[] calldata _ticketNumbers) external;
 
     /**
      * @notice Claim a set of winning tickets for a lottery
@@ -937,10 +823,7 @@ interface IPancakeSwapLottery {
      * @param _autoInjection: reinjects funds into next lottery (vs. withdrawing all)
      * @dev Callable by operator
      */
-    function drawFinalNumberAndMakeLotteryClaimable(
-        uint256 _lotteryId,
-        bool _autoInjection
-    ) external;
+    function drawFinalNumberAndMakeLotteryClaimable(uint256 _lotteryId, bool _autoInjection) external;
 
     /**
      * @notice Inject funds
@@ -977,11 +860,7 @@ interface IPancakeSwapLottery {
 
 pragma solidity ^0.8.4;
 
-contract RandomNumberGenerator is
-    VRFConsumerBase,
-    IRandomNumberGenerator,
-    Ownable
-{
+contract RandomNumberGenerator is VRFConsumerBase, IRandomNumberGenerator, Ownable {
     using SafeERC20 for IERC20;
 
     address public pancakeSwapLottery;
@@ -999,9 +878,7 @@ contract RandomNumberGenerator is
      * @param _vrfCoordinator: address of the VRF coordinator
      * @param _linkToken: address of the LINK token
      */
-    constructor(address _vrfCoordinator, address _linkToken)
-        VRFConsumerBase(_vrfCoordinator, _linkToken)
-    {
+    constructor(address _vrfCoordinator, address _linkToken) VRFConsumerBase(_vrfCoordinator, _linkToken) {
         //
     }
 
@@ -1047,10 +924,7 @@ contract RandomNumberGenerator is
      * @param _tokenAmount: the number of token amount to withdraw
      * @dev Only callable by owner.
      */
-    function withdrawTokens(address _tokenAddress, uint256 _tokenAmount)
-        external
-        onlyOwner
-    {
+    function withdrawTokens(address _tokenAddress, uint256 _tokenAmount) external onlyOwner {
         IERC20(_tokenAddress).safeTransfer(address(msg.sender), _tokenAmount);
     }
 
@@ -1071,13 +945,9 @@ contract RandomNumberGenerator is
     /**
      * @notice Callback function used by ChainLink's VRF Coordinator
      */
-    function fulfillRandomness(bytes32 requestId, uint256 randomness)
-        internal
-        override
-    {
+    function fulfillRandomness(bytes32 requestId, uint256 randomness) internal override {
         require(latestRequestId == requestId, "Wrong requestId");
         randomResult = uint32(1000000 + (randomness % 1000000));
-        latestLotteryId = IPancakeSwapLottery(pancakeSwapLottery)
-            .viewCurrentLotteryId();
+        latestLotteryId = IPancakeSwapLottery(pancakeSwapLottery).viewCurrentLotteryId();
     }
 }
