@@ -965,13 +965,19 @@ contract Lottery is ReentrancyGuard, IPancakeSwapLottery, Ownable {
         nonReentrant
     {
         require(_ticketNumbers.length != 0, "No ticket specified");
+        require(_ticketNumbers.length != 0, "No ticket specified");
         require(_ticketNumbers.length <= maxNumberTicketsPerBuyOrClaim, "Too many tickets");
 
         require(status == Status.Open, "Lottery is not open");
         require(block.timestamp < endTime, "Lottery is over");
 
+        for (uint256 i = 0; i < _ticketNumbers.length; i++) {
+            uint32 thisTicketNumber = _ticketNumbers[i];
+            require((thisTicketNumber >= 1000) && (thisTicketNumber <= 1999), "Outside range");
+        }
+
         // Calculate number of CAKE to this contract
-        uint256 amountCakeToTransfer = calculateTotalPriceForBulkTickets( _ticketNumbers.length);
+        uint256 amountCakeToTransfer = calculateTotalPriceForBulkTickets( _ticketNumbers.length,msg.sender);
 
         // add to totalReward
         totalReward += amountCakeToTransfer;
@@ -1068,11 +1074,12 @@ contract Lottery is ReentrancyGuard, IPancakeSwapLottery, Ownable {
             uint256[] memory tickets = userTickets[users[i]];
             // every user tickets
             for (uint256 j= 0 ; j < tickets.length;j++){
-                if (tickets[j]/100 == first) {
+                uint256 ticket = tickets[j]%1000;
+                if (ticket/100 == first) {
                     matchOneUserCnt += 1 ;
-                    if (tickets[j]/10 %10 == second) {
+                    if (ticket/10 %10 == second) {
                         matchTwoUserCnt += 1 ;
-                        if (tickets[j]%10 == third){
+                        if (ticket%10 == third){
                             matchThreeUserCnt += 1;
                         }
                     }
@@ -1085,11 +1092,12 @@ contract Lottery is ReentrancyGuard, IPancakeSwapLottery, Ownable {
             uint256[] memory tickets = userTickets[users[i]];
             // every user tickets
             for (uint256 j= 0 ; j < tickets.length;j++){
-                if (tickets[j]/100 == first) {
+                uint256 ticket = tickets[j]%1000;
+                if (ticket/100 == first) {
                     userRewards[users[i]] += totalReward * matchOneShare / 100 /matchOneUserCnt;
-                    if (tickets[j]/10 %10 == second) {
+                    if (ticket/10 %10 == second) {
                         userRewards[users[i]] += totalReward * matchTwoShare / 100 /matchTwoUserCnt;
-                        if (tickets[j]%10 == third){
+                        if (ticket%10 == third){
                             userRewards[users[i]] += totalReward * matchThreeShare / 100 /matchThreeUserCnt;
                         }
                     }
@@ -1250,11 +1258,11 @@ contract Lottery is ReentrancyGuard, IPancakeSwapLottery, Ownable {
      * @notice Calculate final price for bulk of tickets
      * @param _numberTickets: number of tickets purchased
      */
-    function calculateTotalPriceForBulkTickets(uint256 _numberTickets) public view returns (uint256) {
-        uint256 total = _numberTickets*priceTicket ** cakeTokenDecimal;
+    function calculateTotalPriceForBulkTickets(uint256 _numberTickets,address _sender) public view returns (uint256) {
+        uint256 total = _numberTickets*priceTicket * (10 ** cakeTokenDecimal);
 
         // nft discount
-        if (nftToken.balanceOf(msg.sender) >= 1 ){
+        if (nftToken.balanceOf(_sender) >= 1 ){
             total = total*nftDiscount/100;
         }
 
