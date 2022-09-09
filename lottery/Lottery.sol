@@ -965,7 +965,6 @@ contract Lottery is ReentrancyGuard, IPancakeSwapLottery, Ownable {
         nonReentrant
     {
         require(_ticketNumbers.length != 0, "No ticket specified");
-        require(_ticketNumbers.length != 0, "No ticket specified");
         require(_ticketNumbers.length <= maxNumberTicketsPerBuyOrClaim, "Too many tickets");
 
         require(status == Status.Open, "Lottery is not open");
@@ -981,8 +980,6 @@ contract Lottery is ReentrancyGuard, IPancakeSwapLottery, Ownable {
 
         // add to totalReward
         totalReward += amountCakeToTransfer;
-        // approve cakeToken of user
-        cakeToken.approve(address(this),amountCakeToTransfer);
         // Transfer cake tokens to this contract
         cakeToken.safeTransferFrom(address(msg.sender), address(this), amountCakeToTransfer);
 
