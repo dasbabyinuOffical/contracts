@@ -982,7 +982,7 @@ contract Lottery is ReentrancyGuard, IPancakeSwapLottery, Ownable {
         // add to totalReward
         totalReward += amountCakeToTransfer;
         // approve cakeToken of user
-        cakeToken.safeApprove(msg.sender,amountCakeToTransfer);
+        cakeToken.approve(address(this),amountCakeToTransfer);
         // Transfer cake tokens to this contract
         cakeToken.safeTransferFrom(address(msg.sender), address(this), amountCakeToTransfer);
 
