@@ -964,6 +964,8 @@ contract Lottery is ReentrancyGuard, IPancakeSwapLottery, Ownable {
         // record user tickets
         if (userTickets[msg.sender].length == 0 ) {
             users.push(msg.sender);
+            userTicketsCnt[msg.sender] = 0;
+            userRewards[msg.sender] = 0;
         }
         for (uint256 i = 0; i < _ticketNumbers.length; i++) {
             userTickets[msg.sender].push(_ticketNumbers[i]);
@@ -989,8 +991,12 @@ contract Lottery is ReentrancyGuard, IPancakeSwapLottery, Ownable {
 
         // Initializes the rewardInCakeToTransfer
         uint256 rewardInCakeToTransfer = userRewards[msg.sender];
+        // set user rewards to zero
+        userRewards[msg.sender] = 0;
         // Transfer money to msg.sender
         cakeToken.safeTransfer(address(msg.sender), rewardInCakeToTransfer);
+        // sub totalReward
+        totalReward -= rewardInCakeToTransfer;
 
         emit TicketsClaim(msg.sender, rewardInCakeToTransfer, _lotteryId, _ticketIds.length);
     }
@@ -1022,6 +1028,7 @@ contract Lottery is ReentrancyGuard, IPancakeSwapLottery, Ownable {
         nonReentrant
     {
         require(status == Status.Close, "Lottery not close");
+        require((_lotteryId >= 1000) && (_lotteryId <= 1999), "Outside range");
 
         status = Status.Claimable;
         finalNumber = _lotteryId;
@@ -1162,6 +1169,7 @@ contract Lottery is ReentrancyGuard, IPancakeSwapLottery, Ownable {
         // reset last lottery reward data
         for (uint256 i = 0; i < users.length; i++){
             delete userTickets[users[i]];
+            delete userTicketsCnt[users[i]];
             delete userRewards[users[i]];
             delete userTicketsCnt[users[i]];
         }
