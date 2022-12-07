@@ -122,6 +122,7 @@ contract Reward{
 
         uint256 blockDelta  = block.number - pool.lastUpdateBlock;
         uint256 rewardShare = pool.rewardShare + blockDelta*pool.rewardPerBlock*pool.depositTokenDecimal/pool.depositAmount;
+        rewardShare /= block.number - pool.startBlock;
 
         User memory user = users[msg.sender][pid];
         userReward = (block.number-user.depositBlock)*rewardShare/pool.depositTokenDecimal;
