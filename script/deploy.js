@@ -7,19 +7,18 @@
 const hre = require("hardhat");
 
 async function main() {
-  const currentTimestampInSeconds = Math.round(Date.now() / 1000);
-  const ONE_YEAR_IN_SECS = 365 * 24 * 60 * 60;
-  const unlockTime = currentTimestampInSeconds + ONE_YEAR_IN_SECS;
+  const feePercent = 3;
+  const feeDest = "0xA4F49B1D73d4fF949b6A41bBA301AbdA5640675c";
+  const Reward = await hre.ethers.getContractFactory("Reward");
+  const reward = await Reward.deploy(feePercent,feeDest);
 
-  const lockedAmount = hre.ethers.utils.parseEther("1");
+  await reward.deployed();
 
-  const Lock = await hre.ethers.getContractFactory("Lock");
-  const lock = await Lock.deploy(unlockTime, { value: lockedAmount });
-
-  await lock.deployed();
+  const USDT = await hre.ethers.getContractFactory("USDT")
+  const usdt = await USDT.deploy();
 
   console.log(
-    `Lock with 1 ETH and unlock timestamp ${unlockTime} deployed to ${lock.address}`
+    `deployed reward to ${reward.address},deployed usdt to ${usdt.address}`
   );
 }
 
