@@ -131,7 +131,7 @@ contract Reward{
         console.log("rewardShare is:%d",rewardShare);
         
         User memory user = users[msg.sender][pid];
-        userReward = (block.number-user.depositBlock)*rewardShare /(block.number - pool.startBlock)/(10**pool.depositTokenDecimal);
+        userReward = user.amount*(block.number-user.depositBlock)*rewardShare /(block.number - pool.startBlock)/(10**pool.depositTokenDecimal);
     }
 
     function updateReward(uint256 pid) internal{

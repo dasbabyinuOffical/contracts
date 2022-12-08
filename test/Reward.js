@@ -75,6 +75,9 @@ describe("Reward", function () {
 
       // withdraw
       await mine(1000);
+      const pool = await reward.pools(poolId);
+      console.log("pool is:",pool);
+
       const blockNumBefore = await ethers.provider.getBlockNumber();
       console.log("after mine,block is:",blockNumBefore);
 
