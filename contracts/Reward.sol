@@ -2,6 +2,7 @@
 pragma solidity ^0.8.10;
 
 import "@openzeppelin/contracts/interfaces/IERC20Metadata.sol";
+import "hardhat/console.sol";
 
 contract Reward{
     struct Pool{
@@ -119,16 +120,19 @@ contract Reward{
 
     function rewards(uint256 pid) public view returns (uint256 userReward){
         Pool memory pool = pools[pid];
+        console.log("pool is",pool);
 
         if (block.number <= pool.lastUpdateBlock){
             return 0;
         }
 
         uint256 blockDelta  = block.number - pool.lastUpdateBlock;
-        uint256 rewardShare = pool.rewardShare + blockDelta*pool.rewardPerBlock*pool.depositTokenDecimal/pool.depositAmount;
+        console.log("blockDelta is:%d",blockDelta);
+        uint256 rewardShare = pool.rewardShare + blockDelta*pool.rewardPerBlock*(10**pool.depositTokenDecimal)/pool.depositAmount;
+        console.log("rewardShare is:%d",rewardShare);
         
         User memory user = users[msg.sender][pid];
-        userReward = (block.number-user.depositBlock)*(rewardShare /(block.number - pool.startBlock))/pool.depositTokenDecimal;
+        userReward = (block.number-user.depositBlock)*rewardShare /(block.number - pool.startBlock)/(10**pool.depositTokenDecimal);
     }
 
     function updateReward(uint256 pid) internal{
