@@ -120,7 +120,6 @@ contract Reward{
 
     function rewards(uint256 pid) public view returns (uint256 userReward){
         Pool memory pool = pools[pid];
-        console.log("pool is",pool);
 
         if (block.number <= pool.lastUpdateBlock){
             return 0;
