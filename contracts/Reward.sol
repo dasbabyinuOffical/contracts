@@ -76,6 +76,7 @@ contract Reward{
     function claimRewards(uint256 claimPoolId) public{
         updateReward(claimPoolId);
         uint256 reward = rewards(claimPoolId);
+        console.log("===============reward:%d",reward);
         if (reward == 0){
             return;
         }
@@ -125,13 +126,18 @@ contract Reward{
             return 0;
         }
 
-        uint256 blockDelta  = block.number - pool.lastUpdateBlock;
+        uint256 endBlock = block.number;
+        if (endBlock > pool.endBlock){
+            endBlock = pool.endBlock;
+        }
+
+        uint256 blockDelta  = endBlock - pool.lastUpdateBlock;
         console.log("blockDelta is:%d",blockDelta);
         uint256 rewardShare = pool.rewardShare + blockDelta*pool.rewardPerBlock*(10**pool.depositTokenDecimal)/pool.depositAmount;
         console.log("rewardShare is:%d",rewardShare);
         
         User memory user = users[msg.sender][pid];
-        userReward = user.amount*(block.number-user.depositBlock)*rewardShare /(block.number - pool.startBlock)/(10**pool.depositTokenDecimal);
+        userReward = user.amount*(endBlock-user.depositBlock)*rewardShare /(endBlock - pool.startBlock)/(10**pool.depositTokenDecimal);
     }
 
     function updateReward(uint256 pid) internal{
@@ -141,9 +147,14 @@ contract Reward{
             return;
         }
 
-        uint256 blockDelta  = block.number - pool.lastUpdateBlock;
-        pool.rewardShare += blockDelta*pool.rewardPerBlock/pool.supply;
-        pool.lastUpdateBlock = block.number;
+        uint256 endBlock = block.number;
+        if (endBlock > pool.endBlock){
+            endBlock = pool.endBlock;
+        }
+
+        uint256 blockDelta  = endBlock - pool.lastUpdateBlock;
+        pool.rewardShare += blockDelta*pool.rewardPerBlock*(10**pool.depositTokenDecimal)/pool.depositAmount;
+        pool.lastUpdateBlock = endBlock;
 
         pools[pid] = pool;
     }
