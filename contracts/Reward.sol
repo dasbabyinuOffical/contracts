@@ -2,7 +2,6 @@
 pragma solidity ^0.8.10;
 
 import "@openzeppelin/contracts/interfaces/IERC20Metadata.sol";
-import "hardhat/console.sol";
 
 contract Reward{
     struct Pool{
@@ -122,7 +121,7 @@ contract Reward{
     function rewards(uint256 pid) public view returns (uint256 userReward){
         Pool memory pool = pools[pid];
 
-        if (block.number <= pool.lastUpdateBlock){
+        if (block.number <= pool.lastUpdateBlock || pool.endBlock == 0 ){
             return 0;
         }
 
