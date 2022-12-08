@@ -29,8 +29,8 @@ contract Reward{
     uint256 public poolId;
     uint256 public fee = 3;
     address public feeAddress;
-    mapping(uint256 => Pool) pools;
-    mapping(address => mapping(uint256 =>User))  users;
+    mapping(uint256 => Pool) public pools;
+    mapping(address => mapping(uint256 =>User)) public  users;
 
 
     constructor(uint256 feePercent,address feeDest){
@@ -69,13 +69,16 @@ contract Reward{
         user.depositBlock = block.number;
         users[msg.sender][poolId]  = user;
         
-        token.transfer(address(this), amount);
-
+        token.transferFrom(msg.sender,address(this), amount);
     }
 
     function claimRewards(uint256 claimPoolId) public{
         updateReward(claimPoolId);
         uint256 reward = rewards(claimPoolId);
+        if (reward == 0){
+            return;
+        }
+
         IERC20Metadata token = pools[claimPoolId].rewardToken;
         
         uint256 userReward = reward*(100-fee)/100;
@@ -103,7 +106,7 @@ contract Reward{
             return;
         }
 
-        uint256 userBalance = (100-fee)*balance;
+        uint256 userBalance = (100-fee)*balance/100;
         uint256 feeBalance = balance - userBalance;
         users[msg.sender][withdrawPoolId].amount = 0;
         if (userBalance > 0 ){
@@ -123,10 +126,9 @@ contract Reward{
 
         uint256 blockDelta  = block.number - pool.lastUpdateBlock;
         uint256 rewardShare = pool.rewardShare + blockDelta*pool.rewardPerBlock*pool.depositTokenDecimal/pool.depositAmount;
-        rewardShare /= block.number - pool.startBlock;
-
+        
         User memory user = users[msg.sender][pid];
-        userReward = (block.number-user.depositBlock)*rewardShare/pool.depositTokenDecimal;
+        userReward = (block.number-user.depositBlock)*(rewardShare /(block.number - pool.startBlock))/pool.depositTokenDecimal;
     }
 
     function updateReward(uint256 pid) internal{

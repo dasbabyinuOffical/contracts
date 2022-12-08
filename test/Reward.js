@@ -38,7 +38,7 @@ describe("Reward", function () {
   });
 
   describe("Deposit",function(){
-    it("CreatePool",async function(){
+    it("Pool",async function(){
       const {reward,owner,usdt} = await loadFixture(deployRewardFixture);
       const block = (await ethers.provider.getBlock("latest"))
       const supply = await usdt.totalSupply();
@@ -46,14 +46,32 @@ describe("Reward", function () {
       const endBlock = ethers.BigNumber.from(block.number+1000);
 
       const balance = await usdt.balanceOf(owner.address);
+      const amount = balance.div(ethers.BigNumber.from(2));
       expect(balance).to.equal(supply);
 
       // approve
       await usdt.approve(reward.address,supply);
       console.log("owner is:",owner.address,balance);
 
-      await reward.createPool(usdt.address,usdt.address,supply,startBlock,endBlock);
-      expect(await reward.poolId()).to.equal(ethers.BigNumber.from(1));
+      // create pool
+      await reward.createPool(usdt.address,usdt.address,amount,startBlock,endBlock);
+      const poolId = (await reward.poolId());
+      expect(poolId).to.equal(ethers.BigNumber.from(1));
+
+      // deposit
+      await reward.deposit(poolId,usdt.address,amount);
+      const user = (await reward.users(owner.address,poolId));
+      console.log("after deposit user is:",user);
+
+      // reward
+      const rewards = (await reward.rewards(poolId));
+      console.log("rewards is:",rewards);
+
+      // withdraw
+      await reward.emergencyWithdrawAll(poolId);
+      const u = (await reward.users(owner.address,poolId));
+      console.log("after withdraw user is:",u);
+
     });
   });
 
