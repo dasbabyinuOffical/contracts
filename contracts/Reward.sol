@@ -26,9 +26,9 @@ contract Reward{
         uint256 depositBlock;
     }
 
-    uint256 poolId;
-    uint256 private fee = 3;
-    address private feeAddress;
+    uint256 public poolId;
+    uint256 public fee = 3;
+    address public feeAddress;
     mapping(uint256 => Pool) pools;
     mapping(address => mapping(uint256 =>User))  users;
 
@@ -51,7 +51,7 @@ contract Reward{
         pools[poolId].endBlock = endBlock;
         pools[poolId].rewardPerBlock = supply/(endBlock-startBlock);
 
-        rewardToken.transferFrom(msg.sender, address(this), supply);
+        rewardToken.transferFrom(msg.sender,address(this), supply);
     }
 
     function deposit(uint256 depositPoolId,IERC20Metadata token, uint256 amount) external{
@@ -68,7 +68,8 @@ contract Reward{
         user.user = msg.sender;
         user.depositBlock = block.number;
         users[msg.sender][poolId]  = user;
-        token.transferFrom(msg.sender, address(this), amount);
+        
+        token.transfer(address(this), amount);
 
     }
 
