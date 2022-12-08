@@ -40,6 +40,7 @@ contract Reward{
     }
 
     function createPool(IERC20Metadata depositToken,IERC20Metadata rewardToken,uint256 supply,uint256 startBlock,uint256 endBlock) external{
+        require(endBlock > startBlock,"end block must bigger than start block");
         poolId ++;
         pools[poolId].poolId = poolId;
         pools[poolId].owner = msg.sender;
