@@ -1,6 +1,7 @@
 const {
   time,
   loadFixture,
+  mine,
 } = require("@nomicfoundation/hardhat-network-helpers");
 const { anyValue } = require("@nomicfoundation/hardhat-chai-matchers/withArgs");
 const { expect } = require("chai");
@@ -68,9 +69,25 @@ describe("Reward", function () {
       console.log("rewards is:",rewards);
 
       // withdraw
-      await reward.emergencyWithdrawAll(poolId);
-      const u = (await reward.users(owner.address,poolId));
-      console.log("after withdraw user is:",u);
+      // await reward.emergencyWithdrawAll(poolId);
+      // const u = (await reward.users(owner.address,poolId));
+      // console.log("after emergency withdraw user is:",u);
+
+      // withdraw
+      await mine(1000);
+      const blockNumBefore = await ethers.provider.getBlockNumber();
+      console.log("after mine,block is:",blockNumBefore);
+
+      const r = (await reward.rewards(poolId));
+      console.log("after mine,rewards is:",r);
+
+      await reward.withdrawAll(poolId);
+      const o = (await reward.users(owner.address,poolId));
+      console.log("after withdraw user is:",o);
+
+      const b = await usdt.balanceOf(owner.address);
+      console.log("after balance is:",b);
+      
 
     });
   });
