@@ -95,12 +95,13 @@ contract Reward is ReentrancyGuard{
         }
 
         uint256 endBlock = block.number;
+        Pool memory pool = pools[claimPoolId];
         if (endBlock > pool.endBlock){
             endBlock = pool.endBlock;
         }
         users[msg.sender][claimPoolId].depositBlock = endBlock;
 
-        IERC20Metadata token = pools[claimPoolId].rewardToken;
+        IERC20Metadata token = pool.rewardToken;
         
         uint256 userReward = reward*(100-fee)/100;
         uint256 rewardFee = reward - userReward;
