@@ -2,8 +2,9 @@
 pragma solidity ^0.8.10;
 
 import "@openzeppelin/contracts/interfaces/IERC20Metadata.sol";
+import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 
-contract Reward{
+contract Reward is ReentrancyGuard{
     struct Pool{
         uint256 poolId;
         address owner;
@@ -32,13 +33,12 @@ contract Reward{
     mapping(uint256 => Pool) public pools;
     mapping(address => mapping(uint256 =>User)) public  users;
 
-
     constructor(uint256 feePercent,address feeDest){
         fee = feePercent;
         feeAddress =  feeDest;
     }
 
-    function createPool(IERC20Metadata depositToken,IERC20Metadata rewardToken,uint256 supply,uint256 endBlock) external{
+    function createPool(IERC20Metadata depositToken,IERC20Metadata rewardToken,uint256 supply,uint256 endBlock) external nonReentrant {
         require(endBlock > block.number,"end block must bigger than start block");
         poolId ++;
 
@@ -62,8 +62,8 @@ contract Reward{
 
     }
 
-    function deposit(uint256 depositPoolId,IERC20Metadata token, uint256 amount) external{
-        Pool memory pool =  pools[poolId];
+    function deposit(uint256 depositPoolId,IERC20Metadata token, uint256 amount) external nonReentrant {
+        Pool memory pool =  pools[depositPoolId];
         require(pool.endBlock >= block.number  && pool.startBlock <= block.number,"pool not exist or already end");
         require(address(pool.depositToken) == address(token),"not support token");
         
@@ -75,7 +75,7 @@ contract Reward{
             amount = balanceAfter - balanceBefore;
         }
 
-        pools[poolId].depositAmount += amount;
+        pools[depositPoolId].depositAmount += amount;
 
         claimRewards(depositPoolId);
 
@@ -84,7 +84,7 @@ contract Reward{
         user.amount += amount;
         user.user = msg.sender;
         user.depositBlock = block.number;
-        users[msg.sender][poolId]  = user;
+        users[msg.sender][depositPoolId]  = user;
     }
 
     function claimRewards(uint256 claimPoolId) public{
@@ -172,16 +172,16 @@ contract Reward{
         pools[pid] = pool;
     }
 
-    function  withdrawAll(uint256 withdrawPoolId) external{
+    function  withdrawAll(uint256 withdrawPoolId) external nonReentrant {
         Pool memory pool = pools[withdrawPoolId];
         require(block.number > pool.endBlock && pool.endBlock > 0,"pool not end yet");
-        withdraw(poolId,false);
+        withdraw(withdrawPoolId,false);
     }
 
-    function emergencyWithdrawAll(uint256 withdrawPoolId) external{
+    function emergencyWithdrawAll(uint256 withdrawPoolId) external nonReentrant {
         Pool memory pool = pools[withdrawPoolId];
         require(block.number > pool.startBlock && pool.startBlock > 0,"pool not start yet");
-        withdraw(poolId,true);
+        withdraw(withdrawPoolId,true);
     }
 
 }

@@ -60,6 +60,7 @@ describe("Reward", function () {
       // deposit
       await reward.deposit(poolId,usdt.address,amount);
       const user = (await reward.users(owner.address,poolId));
+      console.log("user is:",user);
 
       // reward
       const rewards = (await reward.rewards(poolId));
