@@ -63,7 +63,7 @@ describe("Reward", function () {
       console.log("user is:",user);
 
       // reward
-      const rewards = (await reward.rewards(poolId));
+      const rewards = (await reward.rewards(poolId,owner.address));
 
       // withdraw
       // await reward.emergencyWithdrawAll(poolId);
@@ -76,7 +76,7 @@ describe("Reward", function () {
 
       const blockNumBefore = await ethers.provider.getBlockNumber();
 
-      const r = (await reward.rewards(poolId));
+      const r = (await reward.rewards(poolId,owner.address));
       await reward.withdrawAll(poolId);
       const o = (await reward.users(owner.address,poolId));
 
