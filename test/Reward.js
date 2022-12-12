@@ -43,7 +43,6 @@ describe("Reward", function () {
       const {reward,owner,feeDest,usdt} = await loadFixture(deployRewardFixture);
       const block = (await ethers.provider.getBlock("latest"))
       const supply = await usdt.totalSupply();
-      const startBlock = ethers.BigNumber.from(block.number);
       const endBlock = ethers.BigNumber.from(block.number+1000);
 
       const balance = await usdt.balanceOf(owner.address);
@@ -54,7 +53,7 @@ describe("Reward", function () {
       await usdt.approve(reward.address,supply);
 
       // create pool
-      await reward.createPool(usdt.address,usdt.address,amount,startBlock,endBlock);
+      await reward.createPool(usdt.address,usdt.address,amount,endBlock);
       const poolId = (await reward.poolId());
       expect(poolId).to.equal(ethers.BigNumber.from(1));
 

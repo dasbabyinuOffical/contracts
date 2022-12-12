@@ -38,8 +38,8 @@ contract Reward{
         feeAddress =  feeDest;
     }
 
-    function createPool(IERC20Metadata depositToken,IERC20Metadata rewardToken,uint256 supply,uint256 startBlock,uint256 endBlock) external{
-        require(endBlock > startBlock,"end block must bigger than start block");
+    function createPool(IERC20Metadata depositToken,IERC20Metadata rewardToken,uint256 supply,uint256 endBlock) external{
+        require(endBlock > block.number,"end block must bigger than start block");
         poolId ++;
         pools[poolId].poolId = poolId;
         pools[poolId].owner = msg.sender;
@@ -47,10 +47,10 @@ contract Reward{
         pools[poolId].rewardToken = rewardToken;
         pools[poolId].depositTokenDecimal = depositToken.decimals();
         pools[poolId].supply = supply;
-        pools[poolId].startBlock = startBlock;
-        pools[poolId].lastUpdateBlock = startBlock;
+        pools[poolId].startBlock = block.number;
+        pools[poolId].lastUpdateBlock = block.number;
         pools[poolId].endBlock = endBlock;
-        pools[poolId].rewardPerBlock = supply/(endBlock-startBlock);
+        pools[poolId].rewardPerBlock = supply/(endBlock-block.number);
 
         rewardToken.transferFrom(msg.sender,address(this), supply);
     }
@@ -58,7 +58,7 @@ contract Reward{
     function deposit(uint256 depositPoolId,IERC20Metadata token, uint256 amount) external{
         Pool memory pool =  pools[poolId];
         require(pool.endBlock >= block.number  && pool.startBlock <= block.number,"pool not exist or already end");
-        require(pool.depositToken == token,"not support token");
+        require(address(pool.depositToken) == address(token),"not support token");
         pools[poolId].depositAmount += amount;
 
         claimRewards(depositPoolId);
@@ -140,7 +140,7 @@ contract Reward{
     function updateReward(uint256 pid) internal{
         Pool memory pool = pools[pid];
 
-        if (block.number <= pool.lastUpdateBlock){
+        if (block.number <= pool.lastUpdateBlock || pool.lastUpdateBlock == 0){
             return;
         }
 
