@@ -97,9 +97,11 @@ contract Reward{
         Pool memory pool = pools[withdrawPoolId];
         IERC20Metadata token = pool.depositToken;
         uint256 balance = users[msg.sender][withdrawPoolId].amount;
-        if (balance == 0 ){
+        if (balance == 0 || pool.depositAmount < balance){
             return;
         }
+
+        pools[withdrawPoolId].depositAmount -= balance;
         
         if (!isEmergecy){
             users[msg.sender][withdrawPoolId].amount = 0;
@@ -121,7 +123,7 @@ contract Reward{
     function rewards(uint256 pid) public view returns (uint256 userReward){
         Pool memory pool = pools[pid];
 
-        if (block.number <= pool.lastUpdateBlock || pool.endBlock == 0 ){
+        if (block.number <= pool.lastUpdateBlock || pool.endBlock == 0 || pool.depositAmount == 0){
             return 0;
         }
 
@@ -140,7 +142,7 @@ contract Reward{
     function updateReward(uint256 pid) internal{
         Pool memory pool = pools[pid];
 
-        if (block.number <= pool.lastUpdateBlock || pool.lastUpdateBlock == 0){
+        if (block.number <= pool.lastUpdateBlock || pool.lastUpdateBlock == 0 || pool.depositAmount == 0){
             return;
         }
 
