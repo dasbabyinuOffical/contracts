@@ -41,6 +41,14 @@ contract Reward{
     function createPool(IERC20Metadata depositToken,IERC20Metadata rewardToken,uint256 supply,uint256 endBlock) external{
         require(endBlock > block.number,"end block must bigger than start block");
         poolId ++;
+
+        uint256 balanceBefore = rewardToken.balanceOf(address(this));
+        rewardToken.transferFrom(msg.sender,address(this), supply);
+        uint256 balanceAfter = rewardToken.balanceOf(address(this));
+        if(balanceAfter-balanceBefore < supply){
+            supply = balanceAfter - balanceBefore;
+        }
+
         pools[poolId].poolId = poolId;
         pools[poolId].owner = msg.sender;
         pools[poolId].depositToken = depositToken;
@@ -52,13 +60,21 @@ contract Reward{
         pools[poolId].endBlock = endBlock;
         pools[poolId].rewardPerBlock = supply/(endBlock-block.number);
 
-        rewardToken.transferFrom(msg.sender,address(this), supply);
     }
 
     function deposit(uint256 depositPoolId,IERC20Metadata token, uint256 amount) external{
         Pool memory pool =  pools[poolId];
         require(pool.endBlock >= block.number  && pool.startBlock <= block.number,"pool not exist or already end");
         require(address(pool.depositToken) == address(token),"not support token");
+        
+        uint256 balanceBefore = token.balanceOf(address(this));
+        token.transferFrom(msg.sender,address(this), amount);
+        uint256 balanceAfter = token.balanceOf(address(this));
+
+        if(balanceAfter-balanceBefore < amount){
+            amount = balanceAfter - balanceBefore;
+        }
+
         pools[poolId].depositAmount += amount;
 
         claimRewards(depositPoolId);
@@ -69,8 +85,6 @@ contract Reward{
         user.user = msg.sender;
         user.depositBlock = block.number;
         users[msg.sender][poolId]  = user;
-        
-        token.transferFrom(msg.sender,address(this), amount);
     }
 
     function claimRewards(uint256 claimPoolId) public{
