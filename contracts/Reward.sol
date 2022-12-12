@@ -137,7 +137,7 @@ contract Reward is ReentrancyGuard{
     function rewards(uint256 pid,address sender) public view returns (uint256 userReward){
         Pool memory pool = pools[pid];
 
-        if (block.number <= pool.lastUpdateBlock || pool.endBlock == 0 || pool.depositAmount == 0){
+        if (pool.endBlock == 0 || pool.depositAmount == 0){
             return 0;
         }
 
