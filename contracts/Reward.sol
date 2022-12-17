@@ -3,7 +3,6 @@ pragma solidity ^0.8.10;
 
 import "@openzeppelin/contracts/interfaces/IERC20Metadata.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
-import "hardhat/console.sol" ;
 
 contract Reward is ReentrancyGuard{
     struct Pool{
@@ -148,14 +147,9 @@ contract Reward is ReentrancyGuard{
             endBlock = pool.endBlock;
         }
 
-        uint256 blockDelta  = endBlock - pool.startBlock;
+        uint256 blockDelta  = endBlock - user.depositBlock;
         
         User memory user = users[sender][pid];
-        console.log("user.amount:",user.amount);
-        console.log("pool.depositAmount:",pool.depositAmount);
-        console.log("blockDelta:",blockDelta);
-        console.log("allBlock:",pool.endBlock-pool.startBlock);
-        console.log("pool supply is:",pool.supply);
         userReward = user.amount*pool.supply/pool.depositAmount*blockDelta/(pool.endBlock - pool.startBlock);
     }
 
