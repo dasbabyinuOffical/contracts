@@ -63,28 +63,10 @@ describe("Reward", function () {
       console.log("user is:",user);
 
       // reward
-      const rewards = (await reward.rewards(poolId,owner.address));
-
-      // withdraw
-      // await reward.emergencyWithdrawAll(poolId);
-      // const u = (await reward.users(owner.address,poolId));
-      // console.log("after emergency withdraw user is:",u);
-
-      // withdraw
-      await mine(1000);
-      const pool = await reward.pools(poolId);
-
-      const blockNumBefore = await ethers.provider.getBlockNumber();
+      await mine(100);
 
       const r = (await reward.rewards(poolId,owner.address));
-      await reward.withdrawAll(poolId);
-      const o = (await reward.users(owner.address,poolId));
-
-      const b = await usdt.balanceOf(owner.address);
-
-      const f = await usdt.balanceOf(feeDest);
-      console.log("after feeAddress balance is:",f,b);
-      console.log("owner and feeAddress:",owner.address,feeDest);
+      console.log("reward is:",r);
       
     });
   });
