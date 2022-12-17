@@ -147,9 +147,8 @@ contract Reward is ReentrancyGuard{
             endBlock = pool.endBlock;
         }
 
-        uint256 blockDelta  = endBlock - user.depositBlock;
-        
         User memory user = users[sender][pid];
+        uint256 blockDelta  = endBlock - user.depositBlock;
         userReward = user.amount*pool.supply/pool.depositAmount*blockDelta/(pool.endBlock - pool.startBlock);
     }
 
