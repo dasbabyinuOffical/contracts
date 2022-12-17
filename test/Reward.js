@@ -83,7 +83,7 @@ describe("Reward", function () {
       const b = await usdt.balanceOf(owner.address);
 
       const f = await usdt.balanceOf(feeDest);
-      console.log("after feeAddress balance is:",f);
+      console.log("after feeAddress balance is:",f,b);
       console.log("owner and feeAddress:",owner.address,feeDest);
       
     });

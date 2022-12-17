@@ -15,9 +15,6 @@ contract Reward is ReentrancyGuard{
         uint256 depositAmount;
         uint256 startBlock;
         uint256 endBlock;
-        uint256 rewardShare;
-        uint256 rewardPerBlock;
-        uint256 lastUpdateBlock;
     }
     
     struct User{
@@ -56,10 +53,7 @@ contract Reward is ReentrancyGuard{
         pools[poolId].depositTokenDecimal = depositToken.decimals();
         pools[poolId].supply = supply;
         pools[poolId].startBlock = block.number;
-        pools[poolId].lastUpdateBlock = block.number;
         pools[poolId].endBlock = endBlock;
-        pools[poolId].rewardPerBlock = supply/(endBlock-block.number);
-
     }
 
     function deposit(uint256 depositPoolId,IERC20Metadata token, uint256 amount) external nonReentrant {
@@ -88,7 +82,6 @@ contract Reward is ReentrancyGuard{
     }
 
     function claimRewards(uint256 claimPoolId) public{
-        updateReward(claimPoolId);
         uint256 reward = rewards(claimPoolId,msg.sender);
         if (reward == 0){
             return;
@@ -103,6 +96,7 @@ contract Reward is ReentrancyGuard{
 
         IERC20Metadata token = pool.rewardToken;
         
+        pools[claimPoolId].supply -= reward;
         uint256 userReward = reward*(100-fee)/100;
         uint256 rewardFee = reward - userReward;
         if (userReward > 0 ){
@@ -153,30 +147,10 @@ contract Reward is ReentrancyGuard{
             endBlock = pool.endBlock;
         }
 
-        uint256 blockDelta  = endBlock - pool.lastUpdateBlock;
-        uint256 rewardShare = pool.rewardShare + blockDelta*pool.rewardPerBlock*(10**pool.depositTokenDecimal)/pool.depositAmount;
+        uint256 blockDelta  = endBlock - pool.startBlock;
         
         User memory user = users[sender][pid];
-        userReward = user.amount*(endBlock-user.depositBlock)*rewardShare /(endBlock - pool.startBlock)/(10**pool.depositTokenDecimal);
-    }
-
-    function updateReward(uint256 pid) internal{
-        Pool memory pool = pools[pid];
-
-        if (block.number <= pool.lastUpdateBlock || pool.lastUpdateBlock == 0 || pool.depositAmount == 0){
-            return;
-        }
-
-        uint256 endBlock = block.number;
-        if (endBlock > pool.endBlock){
-            endBlock = pool.endBlock;
-        }
-
-        uint256 blockDelta  = endBlock - pool.lastUpdateBlock;
-        pool.rewardShare += blockDelta*pool.rewardPerBlock*(10**pool.depositTokenDecimal)/pool.depositAmount;
-        pool.lastUpdateBlock = endBlock;
-
-        pools[pid] = pool;
+        userReward = user.amount*pool.supply/pool.depositAmount*blockDelta/(pool.endBlock - pool.startBlock);
     }
 
     function  withdrawAll(uint256 withdrawPoolId) external nonReentrant {
@@ -190,5 +164,4 @@ contract Reward is ReentrancyGuard{
         require(block.number > pool.startBlock && pool.startBlock > 0,"pool not start yet");
         withdraw(withdrawPoolId,true);
     }
-
 }
